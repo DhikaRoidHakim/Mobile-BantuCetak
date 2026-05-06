@@ -1,10 +1,10 @@
 import 'package:intl/intl.dart';
 import 'package:sunmi_printer_plus/sunmi_printer_plus.dart';
 
-import '../models/cetak_model.dart';
+import '../models/detail_model.dart';
 
 class PrinterHelper {
-  static Future<void> printReceipt(CetakDocument doc) async {
+  static Future<void> printReceipt(Data doc) async {
     final currencyFormat = NumberFormat.currency(
       locale: 'id_ID',
       symbol: 'Rp',
@@ -61,9 +61,9 @@ class PrinterHelper {
     );
 
     // Info section Header
-    await _printKeyValueRow('Tanggal', doc.tanggal);
-    await _printKeyValueRow('No.', doc.nodokumen);
-    await _printKeyValueRow('Referensi', doc.referensi);
+    await _printKeyValueRow('Tanggal', doc.created_at != null ? DateFormat('dd MMM yyyy, HH:mm').format(doc.created_at!) : '-');
+    await _printKeyValueRow('No.', doc.number);
+    await _printKeyValueRow('Referensi', doc.refid ?? '-');
 
     await SunmiPrinter.printText(
       '--------------------------------',
@@ -72,7 +72,7 @@ class PrinterHelper {
 
     // User Info
     await SunmiPrinter.printText(
-      doc.nama.toUpperCase(),
+      doc.name.toUpperCase(),
       style: SunmiTextStyle(
         bold: true,
         align: SunmiPrintAlign.CENTER,
@@ -80,7 +80,7 @@ class PrinterHelper {
       ),
     );
     await SunmiPrinter.printText(
-      doc.norek,
+      doc.destination,
       style: SunmiTextStyle(align: SunmiPrintAlign.CENTER, fontSize: 24),
     );
 
@@ -117,11 +117,11 @@ class PrinterHelper {
     // Balances
     await _printKeyValueRow(
       'Saldo Tabungan',
-      currencyFormat.format(doc.saldoawal),
+      currencyFormat.format(doc.previous_balance),
     );
     await _printKeyValueRow(
       'Jumlah Setoran',
-      currencyFormat.format(doc.setoran),
+      currencyFormat.format(doc.amount),
     );
     await _printKeyValueRow('Biaya Admin', 'Rp0');
 
@@ -133,7 +133,7 @@ class PrinterHelper {
     // Final Balance
     await _printKeyValueRow(
       'Saldo Akhir',
-      currencyFormat.format(doc.saldoakhir),
+      currencyFormat.format(doc.ending_balance),
       bold: true,
     );
 

@@ -36,10 +36,10 @@ class _SplashPageState extends State<SplashPage>
 
     _animationController.forward();
 
-    // Navigate to Search Screen after 3 seconds
+    // Navigate to Sign In Screen after 3 seconds
     Timer(const Duration(seconds: 3), () {
       if (mounted) {
-        context.go('/');
+        context.go('/signin');
       }
     });
   }
